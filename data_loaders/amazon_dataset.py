@@ -321,9 +321,9 @@ class AmazonDataset(SummReviewDataset):
         for rev in self.reviews:
             lens.append(len(self.subwordenc.encode(rev['reviewText'])))
 
-        print(np.median(lens))
-        print(np.percentile(lens, 75))
-        print(np.percentile(lens, 90))
+        print(f'median encoded length {np.median(lens)}')
+        print(f'75% percentile length {np.percentile(lens, 75)}')
+        print(f' 90% percentale length {np.percentile(lens, 90)}')
         pdb.set_trace()
 
 

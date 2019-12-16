@@ -6,8 +6,8 @@ Class to create SummDataset instances.
 In part here in a separate file to avoid circular imports
 """
 
-from data_loaders.amazon_dataset import AmazonDataset
-from data_loaders.yelp_dataset import YelpDataset
+from .amazon_dataset import AmazonDataset
+from .yelp_dataset import YelpDataset
 
 
 class SummDatasetFactory(object):

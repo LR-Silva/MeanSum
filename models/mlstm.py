@@ -149,11 +149,12 @@ class StackedLSTMEncoder(nn.Module):
         """
         hiddens, cells, outputs = [], [], []
         seq_len = input.size(1)
+        input = input.long()
         for t in range(seq_len):
             if input.dim() == 2:
                 emb = self.embed(input[:, t])
             elif input.dim() == 3:  # e.g. Gumbel softmax summaries
-                emb = torch.matmul(input[:, t, :], self.embed.weight)
+                emb = torch.matmul((input[:, t, :]).float(), self.embed.weight)
 
             hidden, cell, output = self.rnn(emb, hidden, cell)
             if all_hiddens or (t == seq_len - 1):

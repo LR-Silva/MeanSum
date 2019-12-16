@@ -56,7 +56,7 @@ class DatasetConfig(object):
             # Paths
             self.dir_path = 'datasets/amazon_dataset/'
             self.processed_path = 'datasets/amazon_dataset/processed/'
-            self.subwordenc_path = 'datasets/amazon_dataset/processed/subwordenc_32000_secondpass.pkl'
+            self.subwordenc_path = r'D:\Projects\MeanSum\datasets\amazon_dataset\subword_encoder\amazon_tv_subwordenc_32000.pkl'
 
             # Trained models
             self.lm_path = 'stable_checkpoints/lm/mlstm/amazon/batch_size_256-lm_lr_0.001/lm_e25_3.08.pt'

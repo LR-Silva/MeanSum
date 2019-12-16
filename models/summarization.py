@@ -42,7 +42,7 @@ class SummarizationModel(nn.Module):
             self.rec_crit = LabelSmoothing(size=self.dataset.subwordenc.vocab_size,
                                            smoothing=self.hp.sum_label_smooth_val)
         else:
-            self.rec_crit = nn.NLLLoss(ignore_index=PAD_ID)
+            self.rec_crit = nn.NLLLoss(ignore_index=PAD_ID, reduction='mean')
         self.cos_crit = nn.CosineSimilarity(dim=1)
         self.clf_crit = nn.CrossEntropyLoss()
 

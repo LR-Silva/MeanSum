@@ -105,7 +105,7 @@ class SummReviewDataset(SummDataset):
             x[i, :] = padded
         x = torch.from_numpy(x.astype(int))
 
-        x = move_to_cuda(x)
+        x = move_to_cuda(x.long())
         lengths = move_to_cuda(lengths)
         labels = move_to_cuda(labels)
 

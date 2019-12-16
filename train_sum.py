@@ -475,7 +475,7 @@ class Summarizer(object):
         #
         # Encoder-decoder for documents to summary
         self.fixed_lm = None
-        if len(self.opt.load_lm) > 1:
+        if self.opt.load_lm:
             print('Loading pretrained language model from: {}'.format(self.opt.load_lm))
             self.docs_enc = torch.load(self.opt.load_lm)['model']  # StackedLSTMEncoder
             self.docs_enc = self.docs_enc.module if isinstance(self.docs_enc, nn.DataParallel) \
@@ -794,6 +794,8 @@ class Summarizer(object):
         # Get model and loss
         #
         ckpt = torch.load(opt.load_test_sum, map_location=lambda storage, loc: storage)
+        ckpt['sum_model'].rec_crit = nn.NLLLoss(ignore_index=0)
+        ckpt['sum_model'].clf_crit = nn.CrossEntropyLoss()
         self.sum_model = ckpt['sum_model']
         # We should always be loading from the checkpoint, but I wasn't saving it earlier
         # Tau may have been decayed over the course of training, so want to use the tau at the time of checkpointing
