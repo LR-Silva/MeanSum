@@ -295,7 +295,7 @@ if __name__ == '__main__':
                         help='yelp,amazon')
     parser.add_argument('--save_model_fn', default='lm',
                         help="Model filename to save")
-    parser.add_argument('--save_model_basedir', default=os.path.join(SAVED_MODELS_DIR, 'lm', '{}', '{}'),
+    parser.add_argument('--save_model_basedir', default=f'{SAVED_MODELS_DIR}' + '/lm/{}/{}',
                         help="Base directory to save different runs' checkpoints to")
     parser.add_argument('--load_model', default='',
                         help="Model filename to load")
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     opt = parser.parse_args()
 
     # Create directory to store results and save run info
-    save_dir = os.path.join(opt.save_model_basedir.format(hp.model_type, opt.dataset), run_name)
+    save_dir = opt.save_model_basedir.format(hp.model_type, opt.dataset) + f'/{run_name}'
     save_run_data(save_dir, hp=hp)
 
     setup_gpus(opt.gpus, hp.seed)

@@ -455,7 +455,7 @@ class Summarizer(object):
                                     alpha=self.hp.decay_tau_alpha, method=self.hp.decay_tau_method,
                                     min_val=self.hp.min_tau)
 
-        tb_path = os.path.join(self.save_dir, 'tensorboard/')
+        tb_path = self.save_dir +  '/tensorboard/'
         print('Tensorboard events will be logged to: {}'.format(tb_path))
         os.mkdir(tb_path)
         os.mkdir(tb_path + 'train/')
@@ -491,7 +491,7 @@ class Summarizer(object):
             self.docs_enc = StackedLSTMEncoder(embed, lstm)
 
         if self.hp.track_ppl:
-            if len(self.opt.load_lm) > 1:
+            if self.opt.load_lm:
                 self.fixed_lm = copy.deepcopy(self.docs_enc)
             else:
                 # didn't pass in pretrained language model as we're training from scratch
@@ -611,7 +611,7 @@ class Summarizer(object):
         self.discrim_model = None
         self.discrim_optimizer = None
         if self.hp.sum_discrim:
-            if len(self.opt.load_discrim):
+            if self.opt.load_discrim:
                 print('Loading pretrained discriminator from: {}'.format(self.opt.load_discrim))
                 if self.hp.discrim_model == 'cnn':
                     text_model = torch.load(self.opt.load_discrim)['model']
@@ -637,7 +637,7 @@ class Summarizer(object):
         self.clf_model = None
         self.clf_optimizer = None
         if self.hp.sum_clf:
-            if len(self.opt.load_clf) > 0:
+            if self.opt.load_clf:
                 print('Loading pretrained classifier from: {}'.format(self.opt.load_clf))
                 self.clf_model = torch.load(self.opt.load_clf)['model']
             else:
@@ -779,7 +779,7 @@ class Summarizer(object):
                                 'city': ['Las Vegas']}
                     yield(texts, ratings, metadata)
             self.hp.batch_size = 1
-            test_iter  = grouped_reviews_iter(self.hp.n_docs)
+            test_iter = grouped_reviews_iter(self.hp.n_docs)
             test_iter_len = 3
         else:
             test_iter = self.dataset.get_data_loader(split='test', sample_reviews=False, n_docs=self.hp.n_docs,
@@ -948,8 +948,9 @@ if __name__ == '__main__':
                         help='"Movies_and_TV" or "Electronics"'
                              'Only train on one category')
 
-    parser.add_argument('--save_model_basedir', default=os.path.join(SAVED_MODELS_DIR, 'sum', '{}', '{}'),
+    parser.add_argument('--save_model_basedir', default=f'{SAVED_MODELS_DIR}' + r"/sum/{}/{}",
                         help="Base directory to save different runs' checkpoints to")
+
     parser.add_argument('--save_model_fn', default='sum',
                         help="Model filename to save")
     parser.add_argument('--bs_dir', default='',
@@ -992,19 +993,20 @@ if __name__ == '__main__':
     # Set some default paths. It's dataset dependent, which is why we do it here, as dataset is also a
     # command line argument
     ds_conf = DatasetConfig(opt.dataset)
-    if opt.load_lm is None:
-        opt.load_lm = ds_conf.lm_path
-    if opt.load_clf is None:
-        opt.load_clf = ds_conf.clf_path
-    if opt.load_autoenc is None:
-        opt.load_autoenc = ds_conf.autoenc_path
-    if opt.load_test_sum is None:
-        opt.load_test_sum = ds_conf.sum_path
+    if opt.mode == 'test':
+        if opt.load_lm is None:
+            opt.load_lm = ds_conf.lm_path
+        if opt.load_clf is None:
+            opt.load_clf = ds_conf.clf_path
+        if opt.load_autoenc is None:
+            opt.load_autoenc = ds_conf.autoenc_path
+        if opt.load_test_sum is None:
+            opt.load_test_sum = ds_conf.sum_path
 
     # Run
     if opt.mode == 'train':
         # create directory to store results and save run info
-        save_dir = os.path.join(opt.save_model_basedir.format(hp.model_type, opt.dataset), run_name)
+        save_dir = opt.save_model_basedir.format(hp.model_type, opt.dataset) + f'/{run_name}'
         save_run_data(save_dir, hp=hp)
         if (not hp.debug) and (not opt.no_bigstore):
             sync_run_data_to_bigstore(save_dir, exp_sub_dir=opt.bs_dir, method='cp')

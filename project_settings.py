@@ -178,7 +178,7 @@ class HParams(object):
         # TRAINING AND DATA REPRESENTATION
         ###############################################
         self.seed = 1234
-        self.batch_size = 128
+        self.batch_size = 32
         self.n_docs = 8
         self.n_docs_min = -1
         self.n_docs_max = -1
